@@ -1,6 +1,7 @@
 "use client";
 
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -8,11 +9,30 @@ import { NextUIProvider, Spinner } from "@nextui-org/react";
 import { ToastContainer, toast } from 'react-toastify';
 import CreateAppointment from "./components/CreateAppointment";
 import { useRouter } from "next/navigation";
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+
+const localizer = momentLocalizer(moment);
+
+const mappedData = data => data.map(appt => ({
+  id: appt.id,
+  title: appt.title,
+  start: new Date(appt.datetime),
+  end: new Date(new Date(appt.datetime).getTime() + appt.time_span * 60000), // assuming time_span is in minutes
+  description: appt.description
+}));
 
 export default function AppoinmentPage() {
   const router = useRouter()
   const [value, setValue] = useState("");
   const [appointments, setAppointments] = useState([]);
+  const [currentView, setCurrentView] = useState('day');
+
+  const handleViewChange = (view) => {
+    console.log('handleViewChange',  view);
+    setCurrentView(view);
+  };
+
   const supabase = createClient();
 
   const getData = async () => {
@@ -100,6 +120,16 @@ export default function AppoinmentPage() {
         onChange={handleTitleChange}
         onSubmit={handleAppointmentFormSubmit}
         onDelete={handleApoinementDelete}
+      />
+      <Calendar
+        onView={handleViewChange}
+        view={currentView}
+        localizer={localizer}
+        events={mappedData(appointments)}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        onSelectEvent={event => alert(`${event.title} at ${event.start.toLocaleTimeString()}`)}
       />
        {Array.isArray(appointments) && appointments.length? <pre>{JSON.stringify(appointments.sort((a, b) => b.id - a.id), null, 2)}</pre>: <Spinner /> }
        <ToastContainer />
