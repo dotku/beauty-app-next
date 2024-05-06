@@ -26,7 +26,7 @@ export default function AppoinmentPage() {
   const router = useRouter()
   const [value, setValue] = useState("");
   const [appointments, setAppointments] = useState([]);
-  const [currentView, setCurrentView] = useState('day');
+  const [currentView, setCurrentView] = useState('month');
 
   const handleViewChange = (view) => {
     console.log('handleViewChange',  view);
