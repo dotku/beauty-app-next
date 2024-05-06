@@ -1,8 +1,11 @@
 "use client";
 
+import 'react-toastify/dist/ReactToastify.css';
+
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { NextUIProvider, Spinner } from "@nextui-org/react";
+import { ToastContainer, toast } from 'react-toastify';
 import CreateAppointment from "./components/CreateAppointment";
 import { useRouter } from "next/navigation";
 
@@ -33,7 +36,7 @@ export default function AppoinmentPage() {
     }).catch(e => {
       console.error(e);
     })
-
+    toast("Welcome!");
   }, []);
 
   const handleTitleChange = (e) => {
@@ -99,6 +102,7 @@ export default function AppoinmentPage() {
         onDelete={handleApoinementDelete}
       />
        {Array.isArray(appointments) && appointments.length? <pre>{JSON.stringify(appointments.sort((a, b) => b.id - a.id), null, 2)}</pre>: <Spinner /> }
+       <ToastContainer />
     </NextUIProvider>
   );
 }
